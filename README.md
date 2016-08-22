@@ -317,7 +317,258 @@ var greeting = `\`Yo\` World!`;
 
 ```
 
+
+
 ```javascript
+Number.isFinite(15); // true
+Number.isFinite(0.8); // true
+Number.isFinite(NaN); // false
+Number.isFinite(Infinity); // false
+Number.isFinite(-Infinity); // false
+Number.isFinite('foo'); // false
+Number.isFinite('15'); // false
+Number.isFinite(true); // false
+
+Number.isNaN(NaN) // true
+Number.isNaN(15) // false
+Number.isNaN('15') // false
+Number.isNaN(true) // false
+Number.isNaN(9/NaN) // true
+Number.isNaN('true'/0) // true
+Number.isNaN('true'/'true') // true
+
+isFinite(25) // true
+isFinite("25") // true
+Number.isFinite(25) // true
+Number.isFinite("25") // false
+isNaN(NaN) // true
+isNaN("NaN") // true
+Number.isNaN(NaN) // true
+Number.isNaN("NaN") // false
+
+Number.parseInt('12.34') // 12
+Number.parseFloat('123.45#') // 123.45
+
+Number.isInteger(25) // true
+Number.isInteger(25.0) // true
+Number.isInteger(25.1) // false
+Number.isInteger("15") // false
+Number.isInteger(true) // false
+
+function withinErrorMargin (left, right) {
+  return Math.abs(left - right) < Number.EPSILON;
+}
+withinErrorMargin(0.1 + 0.2, 0.3)
+// true
+withinErrorMargin(0.2 + 0.2, 0.3)
+// false
+
+//ES6引入了Number.MAX_SAFE_INTEGER和Number.MIN_SAFE_INTEGER这两个常量，用来表示这个范围的上下限。
+Number.isSafeInteger('a') // false
+Number.isSafeInteger(null) // false
+Number.isSafeInteger(NaN) // false
+Number.isSafeInteger(Infinity) // false
+Number.isSafeInteger(-Infinity) // false
+Number.isSafeInteger(3) // true
+Number.isSafeInteger(1.2) // false
+Number.isSafeInteger(9007199254740990) // true
+Number.isSafeInteger(9007199254740992) // false
+Number.isSafeInteger(Number.MIN_SAFE_INTEGER - 1) // false
+Number.isSafeInteger(Number.MIN_SAFE_INTEGER) // true
+Number.isSafeInteger(Number.MAX_SAFE_INTEGER) // true
+Number.isSafeInteger(Number.MAX_SAFE_INTEGER + 1) // false
+
+Math.trunc(4.1) // 4
+Math.trunc(4.9) // 4
+Math.trunc(-4.1) // -4
+Math.trunc(-4.9) // -4
+Math.trunc(-0.1234) // -0
+
+Math.sign(-5) // -1
+Math.sign(5) // +1
+Math.sign(0) // +0
+Math.sign(-0) // -0
+Math.sign(NaN) // NaN
+Math.sign('foo'); // NaN
+Math.sign();      // NaN
+
+Math.cbrt(-1) // -1
+Math.cbrt(0)  // 0
+Math.cbrt(1)  // 1
+Math.cbrt(2)  // 1.2599210498948734
+
+Math.clz32(0) // 32
+Math.clz32(1) // 31
+Math.clz32(1000) // 22
+Math.clz32(0b01000000000000000000000000000000) // 1
+Math.clz32(0b00100000000000000000000000000000) // 2
+
+Math.imul(2, 4)   // 8
+Math.imul(-1, 8)  // -8
+Math.imul(-2, -2) // 4
+
+Math.fround(0)     // 0
+Math.fround(1)     // 1
+Math.fround(1.337) // 1.3370000123977661
+Math.fround(1.5)   // 1.5
+Math.fround(NaN)   // NaN
+
+Math.hypot(3, 4);        // 5
+Math.hypot(3, 4, 5);     // 7.0710678118654755
+Math.hypot();            // 0
+Math.hypot(NaN);         // NaN
+Math.hypot(3, 4, 'foo'); // NaN
+Math.hypot(3, 4, '5');   // 7.0710678118654755
+Math.hypot(-3);          // 3
+
+Math.expm1(-1) // -0.6321205588285577
+Math.expm1(0)  // 0
+Math.expm1(1)  // 1.718281828459045
+
+Math.log1p(1)  // 0.6931471805599453
+Math.log1p(0)  // 0
+Math.log1p(-1) // -Infinity
+Math.log1p(-2) // NaN
+
+Math.log10(2)      // 0.3010299956639812
+Math.log10(1)      // 0
+Math.log10(0)      // -Infinity
+Math.log10(-2)     // NaN
+Math.log10(100000) // 5
+
+Math.log2(3)       // 1.584962500721156
+Math.log2(2)       // 1
+Math.log2(1)       // 0
+Math.log2(0)       // -Infinity
+Math.log2(-2)      // NaN
+Math.log2(1024)    // 10
+Math.log2(1 << 29) // 29
+
+Math.sinh(x) 返回x的双曲正弦（hyperbolic sine）
+Math.cosh(x) 返回x的双曲余弦（hyperbolic cosine）
+Math.tanh(x) 返回x的双曲正切（hyperbolic tangent）
+Math.asinh(x) 返回x的反双曲正弦（inverse hyperbolic sine）
+Math.acosh(x) 返回x的反双曲余弦（inverse hyperbolic cosine）
+Math.atanh(x) 返回x的反双曲正切（inverse hyperbolic tangent）
+
+2 ** 2 // 4
+2 ** 3 // 8
+
+```
+
+```javascript
+let arrayLike = {
+    '0': 'a',
+    '1': 'b',
+    '2': 'c',
+    length: 3
+};
+// ES5的写法
+var arr1 = [].slice.call(arrayLike); // ['a', 'b', 'c']
+// ES6的写法
+let arr2 = Array.from(arrayLike); // ['a', 'b', 'c']
+
+// arguments对象
+function foo() {
+  var args = [...arguments];
+}
+// NodeList对象
+[...document.querySelectorAll('div')]
+
+Array.from({ length: 3 });
+// [ undefined, undefined, undefined ]
+
+Array.of(3, 11, 8) // [3,11,8]
+Array.of(3) // [3]
+Array.of(3).length // 1
+
+[1, 2, 3, 4, 5].copyWithin(0, 3)
+// [4, 5, 3, 4, 5]
+// 将3号位复制到0号位
+[1, 2, 3, 4, 5].copyWithin(0, 3, 4)
+// [4, 2, 3, 4, 5]
+
+// -2相当于3号位，-1相当于4号位
+[1, 2, 3, 4, 5].copyWithin(0, -2, -1)
+// [4, 2, 3, 4, 5]
+// 将3号位复制到0号位
+[].copyWithin.call({length: 5, 3: 1}, 0, 3)
+// {0: 1, 3: 1, length: 5}
+// 将2号位到数组结束，复制到0号位
+var i32a = new Int32Array([1, 2, 3, 4, 5]);
+i32a.copyWithin(0, 2);
+// Int32Array [3, 4, 5, 4, 5]
+// 对于没有部署TypedArray的copyWithin方法的平台
+// 需要采用下面的写法
+[].copyWithin.call(new Int32Array([1, 2, 3, 4, 5]), 0, 3, 4);
+// Int32Array [4, 2, 3, 4, 5]
+
+[1, 4, -5, 10].find((n) => n < 0)
+// -5
+
+[1, 5, 10, 15].find(function(value, index, arr) {
+  return value > 9;
+}) // 10
+
+[1, 5, 10, 15].findIndex(function(value, index, arr) {
+  return value > 9;
+}) // 2
+
+[NaN].indexOf(NaN)
+// -1
+[NaN].findIndex(y => Object.is(NaN, y))
+// 0
+
+['a', 'b', 'c'].fill(7)
+// [7, 7, 7]
+new Array(3).fill(7)
+// [7, 7, 7]
+['a', 'b', 'c'].fill(7, 1, 2)
+// ['a', 7, 'c']
+
+for (let index of ['a', 'b'].keys()) {
+  console.log(index);
+}
+// 0
+// 1
+for (let elem of ['a', 'b'].values()) {
+  console.log(elem);
+}
+// 'a'
+// 'b'
+for (let [index, elem] of ['a', 'b'].entries()) {
+  console.log(index, elem);
+}
+// 0 "a"
+// 1 "b"
+
+let letter = ['a', 'b', 'c'];
+let entries = letter.entries();
+console.log(entries.next().value); // [0, 'a']
+console.log(entries.next().value); // [1, 'b']
+console.log(entries.next().value); // [2, 'c']
+
+[1, 2, 3].includes(2);     // true
+[1, 2, 3].includes(4);     // false
+[1, 2, NaN].includes(NaN); // true
+[1, 2, 3].includes(3, 3);  // false
+[1, 2, 3].includes(3, -1); // true
+
+// forEach方法
+[,'a'].forEach((x,i) => console.log(i)); // 1
+// filter方法
+['a',,'b'].filter(x => true) // ['a','b']
+// every方法
+[,'a'].every(x => x==='a') // true
+// some方法
+[,'a'].some(x => x !== 'a') // false
+// map方法
+[,'a'].map(x => 1) // [,1]
+// join方法
+[,'a',undefined,null].join('#') // "#a##"
+// toString方法
+[,'a',undefined,null].toString() // ",a,,"
+
 
 ```
 
@@ -325,6 +576,3 @@ var greeting = `\`Yo\` World!`;
 
 ```
 
-```javascript
-
-```

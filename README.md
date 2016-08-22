@@ -573,6 +573,36 @@ console.log(entries.next().value); // [2, 'c']
 ```
 
 ```javascript
+function Point(x = 0, y = 0) {
+  this.x = x;
+  this.y = y;
+}
+var p = new Point();
+p // { x: 0, y: 0 }
+
+function f(x = 1, y) {
+  return [x, y];
+}
+f() // [1, undefined]
+f(2) // [2, undefined])
+f(, 1) // 报错
+f(undefined, 1) // [1, 1]
+
+(function (a) {}).length // 1
+(function (a = 5) {}).length // 0
+(function (a, b, c = 5) {}).length // 2
+(function(...args) {}).length // 0
+(function (a = 0, b, c) {}).length // 0
+(function (a, b = 1, c) {}).length // 1
+
+let x = 1;
+function f(y = x) {
+  let x = 2;
+  console.log(y);
+}
+f() // 1
+
+
 
 ```
 

@@ -602,7 +602,487 @@ function f(y = x) {
 }
 f() // 1
 
+var x = 1;
+function foo(x = x) {
+  // ...
+}
+foo()// ReferenceError: x is not defined
+相当于
+var x = 1;
+function foo() {
+  let x = x;
+}
+foo()// ReferenceError: x is not defined
+
+var x = 1;
+function foo(x, y = function() { x = 2; }) {
+  var x = 3;
+  y();
+  console.log(x);
+}
+foo() // 3
+var x = 1;
+function foo(x, y = function() { x = 2; }) {
+  x = 3;
+  y();
+  console.log(x);
+}
+foo() // 2
+
+function add(...values) {
+  let sum = 0;
+  for (var val of values) {
+    sum += val;
+  }
+  return sum;
+}
+add(2, 5, 3) // 10
+
+// arguments变量的写法
+function sortNumbers() {
+  return Array.prototype.slice.call(arguments).sort();
+}
+// rest参数的写法
+const sortNumbers = (...numbers) => numbers.sort();
+
+// 报错
+function f(a, ...b, c) {
+  // ...
+}
+
+(function(a) {}).length  // 1
+(function(...a) {}).length  // 0
+(function(a, ...b) {}).length  // 1
+
+console.log(...[1, 2, 3])
+// 1 2 3
+
+// ES5的写法
+Math.max.apply(null, [14, 3, 77])
+// ES6的写法
+Math.max(...[14, 3, 77])
+// 等同于
+Math.max(14, 3, 77);
+
+// ES5的写法
+var arr1 = [0, 1, 2];
+var arr2 = [3, 4, 5];
+Array.prototype.push.apply(arr1, arr2);
+// ES6的写法
+var arr1 = [0, 1, 2];
+var arr2 = [3, 4, 5];
+arr1.push(...arr2);
+
+// ES5
+new (Date.bind.apply(Date, [null, 2015, 1, 1]))
+// ES6
+new Date(...[2015, 1, 1]);
+
+// ES5
+[1, 2].concat(more)
+// ES6
+[1, 2, ...more]
+
+// ES5
+a = list[0], rest = list.slice(1)
+// ES6
+[a, ...rest] = list
+
+[...'hello']
+// [ "h", "e", "l", "l", "o" ]
+
+let map = new Map([
+  [1, 'one'],
+  [2, 'two'],
+  [3, 'three'],
+]);
+let arr = [...map.keys()]; // [1, 2, 3]
+
+const numbers = (...nums) => nums;
+numbers(1, 2, 3, 4, 5)
+// [1,2,3,4,5]
+
+let insert = (value) => ({into: (array) => ({after: (afterValue) => {
+  array.splice(array.indexOf(afterValue) + 1, 0, value);
+  return array;
+}})});
+insert(2).into([1, 3]).after(1); //[1, 2, 3]
+
+foo::bar;
+// 等同于
+bar.bind(foo);
+foo::bar(...arguments);
+// 等同于
+bar.apply(foo, arguments);
+const hasOwnProperty = Object.prototype.hasOwnProperty;
+function hasOwn(obj, key) {
+  return obj::hasOwnProperty(key);
+}
+
+var method = obj::obj.foo;
+// 等同于
+var method = ::obj.foo;
+let log = ::console.log;
+// 等同于
+var log = console.log.bind(console);
+
+let { find, html } = jake;
+document.querySelectorAll("div.myClass")
+::find("p")
+::html("hahaha");
 
 
 ```
 
+```javascript
+var foo = 'bar';
+var baz = {foo};
+baz // {foo: "bar"}
+// 等同于
+var baz = {foo: foo};
+
+function f(x, y) {
+  return {x, y};
+}
+// 等同于
+function f(x, y) {
+  return {x: x, y: y};
+}
+f(1, 2) // Object {x: 1, y: 2}
+
+var o = {
+  method() {
+    return "Hello!";
+  }
+};
+// 等同于
+var o = {
+  method: function() {
+    return "Hello!";
+  }
+};
+
+var birth = '2000/01/01';
+var Person = {
+  name: '张三',
+  //等同于birth: birth
+  birth,
+  // 等同于hello: function ()...
+  hello() { console.log('我的名字是', this.name); }
+};
+
+function getPoint() {
+  var x = 1;
+  var y = 10;
+  return {x, y};
+}
+getPoint()
+// {x:1, y:10}
+
+var obj = {
+  * m(){
+    yield 'hello world';
+  }
+};
+
+let propKey = 'foo';
+let obj = {
+  [propKey]: true,
+  ['a' + 'bc']: 123
+};
+
+var lastWord = 'last word';
+var a = {
+  'first word': 'hello',
+  [lastWord]: 'world'
+};
+a['first word'] // "hello"
+a[lastWord] // "world"
+a['last word'] // "world"
+
+let obj = {
+  ['h'+'ello']() {
+    return 'hi';
+  }
+};
+obj.hello() // hi
+
+var person = {
+  sayName() {
+    console.log(this.name);
+  },
+  get firstName() {
+    return "Nicholas";
+  }
+};
+person.sayName.name   // "sayName"
+person.firstName.name // "get firstName"
+(new Function()).name // "anonymous"
+var doSomething = function() {
+  // ...
+};
+doSomething.bind().name // "bound doSomething"
+
+Object.is('foo', 'foo')
+// true
+Object.is({}, {})
+// false
+
++0 === -0 //true
+NaN === NaN // false
+Object.is(+0, -0) // false
+Object.is(NaN, NaN) // true
+
+var target = { a: 1 };
+var source1 = { b: 2 };
+var source2 = { c: 3 };
+Object.assign(target, source1, source2);
+target // {a:1, b:2, c:3}
+
+var target = { a: 1, b: 1 };
+var source1 = { b: 2, c: 2 };
+var source2 = { c: 3 };
+Object.assign(target, source1, source2);
+target // {a:1, b:2, c:3}
+
+var obj = {a: 1};
+Object.assign(obj) === obj // true
+
+typeof Object.assign(2) // "object"
+
+Object.assign(undefined) // 报错
+Object.assign(null) // 报错
+
+let obj = {a: 1};
+Object.assign(obj, undefined) === obj // true
+Object.assign(obj, null) === obj // true
+
+var v1 = 'abc';
+var v2 = true;
+var v3 = 10;
+var obj = Object.assign({}, v1, v2, v3);
+console.log(obj); // { "0": "a", "1": "b", "2": "c" }
+
+var obj1 = {a: {b: 1}};
+var obj2 = Object.assign({}, obj1);
+obj1.a.b = 2;
+obj2.a.b // 2
+
+
+
+```
+
+```javascript
+
+```
+
+```javascript
+
+```
+
+```javascript
+Set结构的实例有以下属性。
+Set.prototype.constructor：构造函数，默认就是Set函数。
+Set.prototype.size：返回Set实例的成员总数。
+Set实例的方法分为两大类：操作方法（用于操作数据）和遍历方法（用于遍历成员）。下面先介绍四个操作方法。
+add(value)：添加某个值，返回Set结构本身。
+delete(value)：删除某个值，返回一个布尔值，表示删除是否成功。
+has(value)：返回一个布尔值，表示该值是否为Set的成员。
+clear()：清除所有成员，没有返回值。
+
+
+s.add(1).add(2).add(2);
+// 注意2被加入了两次
+s.size // 2
+s.has(1) // true
+s.has(2) // true
+s.has(3) // false
+s.delete(2);
+s.has(2) // false
+
+var items = new Set([1, 2, 3, 4, 5]);
+var array = Array.from(items);
+
+Set结构的实例有四个遍历方法，可以用于遍历成员。
+keys()：返回键名的遍历器
+values()：返回键值的遍历器
+entries()：返回键值对的遍历器
+forEach()：使用回调函数遍历每个成员
+需要特别指出的是，Set的遍历顺序就是插入顺序。这个特性有时非常有用，比如使用Set保存一个回调函数列表，调用时就能保证按照添加顺序调用。
+
+WeakSet结构与Set类似，也是不重复的值的集合。但是，它与Set有两个区别。
+首先，WeakSet的成员只能是对象，而不能是其他类型的值。
+其次，WeakSet中的对象都是弱引用，即垃圾回收机制不考虑WeakSet对该对象的引用，也就是说，如果其他对象都不再引用该对象，那么垃圾回收机制会自动回收该对象所占用的内存，不考虑该对象还存在于WeakSet之中。这个特点意味着，无法引用WeakSet的成员，因此WeakSet是不可遍历的。
+var a = [[1,2], [3,4]];
+var ws = new WeakSet(a);
+var b = [3, 4];
+var ws = new WeakSet(b);
+// Uncaught TypeError: Invalid value used in weak set(…)
+WeakSet.prototype.add(value)：向WeakSet实例添加一个新成员。
+WeakSet.prototype.delete(value)：清除WeakSet实例的指定成员。
+WeakSet.prototype.has(value)：返回一个布尔值，表示某个值是否在
+var ws = new WeakSet();
+var obj = {};
+var foo = {};
+ws.add(window);
+ws.add(obj);
+ws.has(window); // true
+ws.has(foo);    // false
+ws.delete(window);
+ws.has(window);    // false
+ws.size // undefined
+ws.forEach // undefined
+ws.forEach(function(item){ console.log('WeakSet has ' + item)})
+// TypeError: undefined is not a function
+
+JavaScript的对象（Object），本质上是键值对的集合（Hash结构），但是传统上只能用字符串当作键。这给它的使用带来了很大的限制。
+var data = {};
+var element = document.getElementById('myDiv');
+data[element] = 'metadata';
+data['[object HTMLDivElement]'] // "metadata"
+
+var m = new Map();
+var o = {p: "Hello World"};
+m.set(o, "content")
+m.get(o) // "content"
+m.has(o) // true
+m.delete(o) // true
+m.has(o) // false
+
+var map = new Map([['name', '张三'], ['title', 'Author']]);
+map.size // 2
+map.has('name') // true
+map.get('name') // "张三"
+map.has('title') // true
+map.get('title') // "Author"
+
+let map = new Map();
+map
+.set(1, 'aaa')
+.set(1, 'bbb');
+map.get(1) // "bbb"
+
+new Map().get('asfddfsasadf')// undefined
+
+var map = new Map();
+map.set(['a'], 555);
+map.get(['a']) // undefined
+
+//如果Map的键是一个简单类型的值（数字、字符串、布尔值），则只要两个值严格相等，Map将其视为一个键，包括0和-0。另外，虽然NaN不严格相等于自身，但Map将其视为同一个键
+let map = new Map();
+map.set(NaN, 123);
+map.get(NaN) // 123
+map.set(-0, 123);
+map.get(+0) // 123
+
+let map = new Map();
+map.set('foo', true);
+map.set('bar', false);
+map.size // 2
+
+var m = new Map();
+m.set("edition", 6)        // 键是字符串
+m.set(262, "standard")     // 键是数值
+m.set(undefined, "nah")    // 键是undefined
+
+let map = new Map()
+  .set(1, 'a')
+  .set(2, 'b')
+  .set(3, 'c');
+  
+var m = new Map();
+var hello = function() {console.log("hello");}
+m.set(hello, "Hello ES6!") // 键是函数
+m.get(hello)  // Hello ES6!
+
+var m = new Map();
+m.set("edition", 6);
+m.set(262, "standard");
+m.set(undefined, "nah");
+m.has("edition")     // true
+m.has("years")       // false
+m.has(262)           // true
+m.has(undefined)     // true
+
+var m = new Map();
+m.set(undefined, "nah");
+m.has(undefined)     // true
+m.delete(undefined)
+m.has(undefined)       // false
+
+let map = new Map();
+map.set('foo', true);
+map.set('bar', false);
+map.size // 2
+map.clear()
+map.size // 0
+
+Map原生提供三个遍历器生成函数和一个遍历方法。
+keys()：返回键名的遍历器。
+values()：返回键值的遍历器。
+entries()：返回所有成员的遍历器。
+forEach()：遍历Map的所有成员。
+
+let myMap = new Map().set(true, 7).set({foo: 3}, ['abc']);
+[...myMap]
+// [ [ true, 7 ], [ { foo: 3 }, [ 'abc' ] ] ]
+
+new Map([[true, 7], [{foo: 3}, ['abc']]])
+// Map {true => 7, Object {foo: 3} => ['abc']}
+
+function strMapToObj(strMap) {
+  let obj = Object.create(null);
+  for (let [k,v] of strMap) {
+    obj[k] = v;
+  }
+  return obj;
+}
+let myMap = new Map().set('yes', true).set('no', false);
+strMapToObj(myMap)
+// { yes: true, no: false }
+
+function objToStrMap(obj) {
+  let strMap = new Map();
+  for (let k of Object.keys(obj)) {
+    strMap.set(k, obj[k]);
+  }
+  return strMap;
+}
+objToStrMap({yes: true, no: false})
+// [ [ 'yes', true ], [ 'no', false ] ]
+
+WeakMap结构与Map结构基本类似，唯一的区别是它只接受对象作为键名（null除外），不接受其他类型的值作为键名，而且键名所指向的对象，不计入垃圾回收机制。
+var map = new WeakMap()
+map.set(1, 2)
+// TypeError: 1 is not an object!
+map.set(Symbol(), 2)
+// TypeError: Invalid value used as weak map key
+
+var wm = new WeakMap();
+var element = document.querySelector(".element");
+wm.set(element, "Original");
+wm.get(element) // "Original"
+element.parentNode.removeChild(element);
+element = null;
+wm.get(element) // undefined
+
+var wm = new WeakMap();
+wm.size
+// undefined
+wm.forEach
+// undefined
+
+```
+
+
+```javascript
+
+```
+
+```javascript
+
+```
+
+```javascript
+
+```

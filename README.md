@@ -1080,7 +1080,357 @@ wm.forEach
 ```
 
 ```javascript
+class Bar {
+  doStuff() {
+    console.log('stuff');
+  }
+}
+var b = new Bar();
+b.doStuff() // "stuff"
 
+class Point {
+  constructor(){
+    // ...
+  }
+  toString(){
+    // ...
+  }
+  toValue(){
+    // ...
+  }
+}
+// 等同于
+Point.prototype = {
+  toString(){},
+  toValue(){}
+};
+
+class B {}
+let b = new B();
+b.constructor === B.prototype.constructor // true
+
+class Point {
+  constructor(){
+    // ...
+  }
+}
+Object.assign(Point.prototype, {
+  toString(){},
+  toValue(){}
+});
+
+Point.prototype.constructor === Point // true
+
+class Point {
+  constructor(x, y) {
+    // ...
+  }
+  toString() {
+    // ...
+  }
+}
+Object.keys(Point.prototype)
+// []
+Object.getOwnPropertyNames(Point.prototype)
+// ["constructor","toString"]
+
+var Point = function (x, y) {
+  // ...
+};
+Point.prototype.toString = function() {
+  // ...
+};
+Object.keys(Point.prototype)
+// ["toString"]
+Object.getOwnPropertyNames(Point.prototype)
+// ["constructor","toString"]
+
+class Foo {
+  constructor() {
+    return Object.create(null);
+  }
+}
+new Foo() instanceof Foo
+// false
+
+class Foo {
+  constructor() {
+    return Object.create(null);
+  }
+}
+Foo()
+// TypeError: Class constructor Foo cannot be invoked without 'new'
+
+//定义类
+class Point {
+
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  toString() {
+    return '(' + this.x + ', ' + this.y + ')';
+  }
+
+}
+
+var point = new Point(2, 3);
+point.toString() // (2, 3)
+point.hasOwnProperty('x') // true
+point.hasOwnProperty('y') // true
+point.hasOwnProperty('toString') // false
+point.__proto__.hasOwnProperty('toString') // true
+
+var p1 = new Point(2,3);
+var p2 = new Point(3,2);
+p1.__proto__ === p2.__proto__
+//true
+
+new Foo(); // ReferenceError
+class Foo {}
+
+{
+  let Foo = class {};
+  class Bar extends Foo {
+  }
+}
+
+const MyClass = class Me {
+  getClassName() {
+    return Me.name;
+  }
+};
+let inst = new MyClass();
+inst.getClassName() // Me
+Me.name // ReferenceError: Me is not defined
+
+const MyClass = class { /* ... */ };
+
+let person = new class {
+  constructor(name) {
+    this.name = name;
+  }
+  sayName() {
+    console.log(this.name);
+  }
+}('张三');
+person.sayName(); // "张三"
+
+class ColorPoint extends Point {
+  constructor(x, y, color) {
+    super(x, y); // 调用父类的constructor(x, y)
+    this.color = color;
+  }
+
+  toString() {
+    return this.color + ' ' + super.toString(); // 调用父类的toString()
+  }
+}
+
+class Point { /* ... */ }
+class ColorPoint extends Point {
+  constructor() {
+  }
+}
+let cp = new ColorPoint(); // ReferenceError
+
+class Point {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+}
+class ColorPoint extends Point {
+  constructor(x, y, color) {
+    this.color = color; // ReferenceError
+    super(x, y);
+    this.color = color; // 正确
+  }
+}
+
+let cp = new ColorPoint(25, 8, 'green');
+cp instanceof ColorPoint // true
+cp instanceof Point // true
+
+class A {
+}
+class B extends A {
+}
+B.__proto__ === A // true
+B.prototype.__proto__ === A.prototype // true
+
+class A {
+}
+class B {
+}
+// B的实例继承A的实例
+Object.setPrototypeOf(B.prototype, A.prototype);
+// B继承A的静态属性
+Object.setPrototypeOf(B, A);
+
+Object.setPrototypeOf(B.prototype, A.prototype);
+// 等同于
+B.prototype.__proto__ = A.prototype;
+Object.setPrototypeOf(B, A);
+// 等同于
+B.__proto__ = A;
+
+Object.create(A.prototype);
+// 等同于
+B.prototype.__proto__ = A.prototype;
+
+class A extends Object {
+}
+A.__proto__ === Object // true
+A.prototype.__proto__ === Object.prototype // true
+
+class A {
+}
+A.__proto__ === Function.prototype // true
+A.prototype.__proto__ === Object.prototype // true
+
+class A extends null {
+}
+A.__proto__ === Function.prototype // true
+A.prototype.__proto__ === undefined // true
+
+Object.getPrototypeOf(ColorPoint) === Point
+// true
+//getPrototypeOf,setPrototypeOf设置原型链
+
+var p1 = new Point(2, 3);
+var p2 = new ColorPoint(2, 3, 'red');
+p2.__proto__ === p1.__proto__ // false
+p2.__proto__.__proto__ === p1.__proto__ // true
+
+class MyArray extends Array {
+  constructor(...args) {
+    super(...args);
+  }
+}
+var arr = new MyArray();
+arr[0] = 12;
+arr.length // 1
+arr.length = 0;
+arr[0] // undefined
+
+class VersionedArray extends Array {
+  constructor() {
+    super();
+    this.history = [[]];
+  }
+  commit() {
+    this.history.push(this.slice());
+  }
+  revert() {
+    this.splice(0, this.length, ...this.history[this.history.length - 1]);
+  }
+}
+
+var x = new VersionedArray();
+x.push(1);
+x.push(2);
+x // [1, 2]
+x.history // [[]]
+x.commit();
+x.history // [[], [1, 2]]
+x.push(3);
+x // [1, 2, 3]
+x.revert();
+x // [1, 2]
+
+class MyClass {
+  constructor() {
+    // ...
+  }
+  get prop() {
+    return 'getter';
+  }
+  set prop(value) {
+    console.log('setter: '+value);
+  }
+}
+let inst = new MyClass();
+inst.prop = 123;
+// setter: 123
+inst.prop
+// 'getter'
+
+class Foo {
+  static classMethod() {
+    return 'hello';
+  }
+}
+Foo.classMethod() // 'hello'
+var foo = new Foo();
+foo.classMethod()
+// TypeError: foo.classMethod is not a function
+
+
+class Foo {
+  static classMethod() {
+    return 'hello';
+  }
+}
+
+Foo.classMethod() // 'hello'
+var foo = new Foo();
+foo.classMethod()
+// TypeError: foo.classMethod is not a function
+
+class Foo {
+  static classMethod() {
+    return 'hello';
+  }
+}
+class Bar extends Foo {
+}
+Bar.classMethod(); // 'hello'
+
+class Foo {
+  static classMethod() {
+    return 'hello';
+  }
+}
+class Bar extends Foo {
+  static classMethod() {
+    return super.classMethod() + ', too';
+  }
+}
+Bar.classMethod();
+
+class Foo {
+}
+Foo.prop = 1;
+Foo.prop // 1
+
+// 以下两种写法都无效
+class Foo {
+  // 写法一
+  prop: 2
+  // 写法二
+  static prop: 2
+}
+Foo.prop // undefined
+
+function Person(name) {
+  if (new.target !== undefined) {
+    this.name = name;
+  } else {
+    throw new Error('必须使用new生成实例');
+  }
+}
+// 另一种写法
+function Person(name) {
+  if (new.target === Person) {
+    this.name = name;
+  } else {
+    throw new Error('必须使用new生成实例');
+  }
+}
+var person = new Person('张三'); // 正确
+var notAPerson = Person.call(person, '张三');  // 报错
 ```
 
 ```javascript
